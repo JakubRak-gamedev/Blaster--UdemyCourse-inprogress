@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "BlasterCharacter.generated.h"
 
+class UWidgetComponent;
 class UCameraComponent;
 class USpringArmComponent;
 class UInputMappingContext;
@@ -35,6 +36,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* LookAction;
 
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* JumpAction;
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 private:
@@ -43,4 +47,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category="Camera")
 	UCameraComponent* FollowCamera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UWidgetComponent* OverheadWidget;
 };

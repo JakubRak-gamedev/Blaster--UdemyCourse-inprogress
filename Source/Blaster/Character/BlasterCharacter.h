@@ -46,9 +46,18 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* EquipAction;
 
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* CrouchAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* AimAction;
+	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void EquipButtonPressed();
+	void CrouchButtonPressed();
+	void AimButtonPressed();
+	void AimButtonReleased();
 private:
 	UPROPERTY(VisibleAnywhere, Category="Camera")
 	USpringArmComponent* CameraBoom;
@@ -73,6 +82,9 @@ private:
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool isWeaponEquipped();
+	bool isAiming();
 };
+
+
 
 

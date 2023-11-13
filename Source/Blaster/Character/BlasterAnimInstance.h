@@ -49,4 +49,10 @@ private:
 	FRotator CharaterRotationLastFrame;
 	FRotator CharaterRotation;
 	FRotator DeltaRotation;
+
+	UPROPERTY(BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	float AO_Yaw;
+
+	UPROPERTY(BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	float AO_Pitch;
 };

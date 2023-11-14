@@ -3,10 +3,12 @@
 
 #include "Weapon.h"
 
+#include "Casing.h"
 #include "Blaster/Character/BlasterCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Animation/AnimationAsset.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -113,11 +115,31 @@ void AWeapon::ShowPickupWidget(bool bShowWidget) const
 	}
 }
 
-void AWeapon::Fire()
+void AWeapon::Fire(const FVector& HitTarget)
 {
 	if(FireAnimation)
 	{
 		WeaponMesh->PlayAnimation(FireAnimation, false);
+	}
+	if(CasingClass)
+	{
+		const USkeletalMeshSocket* AmmoEjectSocket = WeaponMesh->GetSocketByName(FName("AmmoEject"));
+	
+		if(AmmoEjectSocket)
+		{
+			const FTransform SocketTransform = AmmoEjectSocket->GetSocketTransform(WeaponMesh);
+			
+			UWorld* World = GetWorld();
+			if(World)
+			{
+				World->SpawnActor<ACasing>(
+					CasingClass,
+					SocketTransform.GetLocation(),
+					SocketTransform.GetRotation().Rotator()
+					);
+			}
+		
+		}
 	}
 }
 

@@ -15,6 +15,7 @@ class USpringArmComponent;
 class UInputMappingContext;
 class UInputAction;
 class AWeapon;
+class UAnimMontage;
 
 UCLASS()
 class BLASTER_API ABlasterCharacter : public ACharacter
@@ -28,6 +29,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
+	void PlayFireMontage(bool bAiming);
 protected:
 	
 	virtual void BeginPlay() override;
@@ -52,6 +54,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* AimAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* FireAction;
 	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
@@ -60,6 +65,8 @@ protected:
 	void AimButtonPressed();
 	void AimButtonReleased();
 	virtual void Jump() override;
+	void FireButtonPressed();
+	void FireButtonReleased();
 	
 	void AimOffset(float DeltaTime);
 private:
@@ -91,6 +98,9 @@ private:
 	
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
+
+	UPROPERTY(EditDefaultsOnly, Category="Combat")
+	 UAnimMontage* FireWeaponMontage;
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool isWeaponEquipped();

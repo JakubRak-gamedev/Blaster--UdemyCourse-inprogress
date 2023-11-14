@@ -157,6 +157,22 @@ void ABlasterCharacter::Jump()
 	}
 }
 
+void ABlasterCharacter::FireButtonPressed()
+{
+	if(Combat)
+	{
+		Combat->FireButtonPressed(true);
+	}
+}
+
+void ABlasterCharacter::FireButtonReleased()
+{
+	if(Combat)
+	{
+		Combat->FireButtonPressed(false);
+	}
+}
+
 void ABlasterCharacter::AimOffset(float DeltaTime)
 {
 	if(Combat && Combat->EquippedWeapon == nullptr) return;
@@ -233,6 +249,8 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &ABlasterCharacter::AimButtonPressed);
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &ABlasterCharacter::AimButtonReleased);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &ABlasterCharacter::FireButtonPressed);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ABlasterCharacter::FireButtonReleased);
 		
 	}
 }
@@ -242,6 +260,20 @@ void ABlasterCharacter::PostInitializeComponents()
 	if(Combat)
 	{
 		Combat->Character = this;
+	}
+}
+
+void ABlasterCharacter::PlayFireMontage(bool bAiming)
+{
+	if(Combat==nullptr || Combat->EquippedWeapon==nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance && FireWeaponMontage)
+	{
+		AnimInstance->Montage_Play(FireWeaponMontage);
+		FName SectionName;
+		SectionName = bAiming ? FName("RifleAim") : FName("RifleHip") ;
+		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
 

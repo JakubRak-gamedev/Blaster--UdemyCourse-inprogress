@@ -3,6 +3,9 @@
 
 #include "Casing.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+
 
 ACasing::ACasing()
 {
@@ -13,16 +16,29 @@ ACasing::ACasing()
 	SetRootComponent(CasingMesh);
 	CasingMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	CasingMesh->SetSimulatePhysics(true);
+	CasingMesh->SetNotifyRigidBodyCollision(true);
 	CasingMesh->SetEnableGravity(true);
-	ShellEjectionImpulse = 10.f;
+	ShellEjectionImpulse = 5.f;
+	bFirstHit = true;
 }
 
 
 void ACasing::BeginPlay()
 {
 	Super::BeginPlay();
+	CasingMesh->OnComponentHit.AddDynamic(this, &ACasing::OnHit);
 	CasingMesh->AddImpulse(GetActorForwardVector() * ShellEjectionImpulse);
-	SetLifeSpan(10.f);
+	SetLifeSpan(8.f);
+}
+
+void ACasing::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	FVector NormalImpulse, const FHitResult& Hit)
+{
+	if(ShellSound && bFirstHit)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ShellSound, GetActorLocation());
+		bFirstHit = false;
+	}
 }
 
 

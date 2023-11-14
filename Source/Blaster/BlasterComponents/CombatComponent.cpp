@@ -9,6 +9,8 @@
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Blaster/PlayerController/BlasterPlayerController.h"
+#include "Blaster/HUD/BlasterHUD.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -38,6 +40,46 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatComponent, bAiming);
 }
 
+void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	SetHUDCrosshairs(DeltaTime);
+}
+void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
+{
+	if(Character == nullptr || Character->Controller == nullptr) return;
+
+	Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
+	
+	if(Controller)
+	{
+		HUD = HUD == nullptr ? Cast<ABlasterHUD>(Controller->GetHUD()) : HUD;
+		if(HUD)
+		{
+			FHUDPackage HUDPackage;
+			if(EquippedWeapon)
+			{
+				
+				HUDPackage.CrosshairsCenter = EquippedWeapon->CrosshairCenter;
+				HUDPackage.CrosshairsLeft =  EquippedWeapon->CrosshairLeft;
+				HUDPackage.CrosshairsRight =  EquippedWeapon->CrosshairRight;
+				HUDPackage.CrosshairsBottom =  EquippedWeapon->CrosshairBottom;
+				HUDPackage.CrosshairsTop =  EquippedWeapon->CrosshairTop;
+			}
+			else
+			{
+                HUDPackage.CrosshairsCenter = nullptr;
+                HUDPackage.CrosshairsLeft =  nullptr;
+                HUDPackage.CrosshairsRight = nullptr;
+                HUDPackage.CrosshairsBottom =  nullptr;
+                HUDPackage.CrosshairsTop =  nullptr;
+              
+			}
+			HUD->SetHUDPackage(HUDPackage);
+		}
+	}
+}
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
 	bAiming = bIsAiming;
@@ -124,11 +166,7 @@ void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& Trac
 	MulticastFire(TraceHitTarget);
 }
 
-void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
-}
+
 
 
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)

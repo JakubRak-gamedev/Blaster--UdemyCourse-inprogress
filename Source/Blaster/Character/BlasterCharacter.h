@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Blaster/Interfaces/InteractWithCrosshairsInterface.h"
 #include "Blaster/BlasterTypes/TurningInPlace.h"
 #include "BlasterCharacter.generated.h"
 
@@ -18,7 +19,7 @@ class AWeapon;
 class UAnimMontage;
 
 UCLASS()
-class BLASTER_API ABlasterCharacter : public ACharacter
+class BLASTER_API ABlasterCharacter : public ACharacter, public IInteractWithCrosshairsInterface
 {
 	GENERATED_BODY()
 
@@ -30,6 +31,9 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
 	void PlayFireMontage(bool bAiming);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHit();
 protected:
 	
 	virtual void BeginPlay() override;
@@ -69,6 +73,8 @@ protected:
 	void FireButtonReleased();
 	
 	void AimOffset(float DeltaTime);
+
+	void PlayHitReactMontage();
 private:
 	UPROPERTY(VisibleAnywhere, Category="Camera")
 	USpringArmComponent* CameraBoom;
@@ -99,8 +105,16 @@ private:
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
 
-	UPROPERTY(EditDefaultsOnly, Category="Combat")
+	UPROPERTY(EditAnywhere, Category="Combat")
 	 UAnimMontage* FireWeaponMontage;
+
+	UPROPERTY(EditAnywhere, Category="Combat")
+	UAnimMontage* HitReactMontage;
+	
+	void HideCameraIfCharacterClose();
+
+	UPROPERTY(EditAnywhere)
+	float CameraThreshold = 200.f;
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool isWeaponEquipped();

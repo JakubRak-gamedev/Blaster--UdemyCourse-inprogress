@@ -9,6 +9,7 @@
 #include "Blaster/BlasterTypes/TurningInPlace.h"
 #include "BlasterCharacter.generated.h"
 
+class ABlasterPlayerController;
 class UCombatComponent;
 class UWidgetComponent;
 class UCameraComponent;
@@ -17,6 +18,7 @@ class UInputMappingContext;
 class UInputAction;
 class AWeapon;
 class UAnimMontage;
+class AController;
 
 UCLASS()
 class BLASTER_API ABlasterCharacter : public ACharacter, public IInteractWithCrosshairsInterface
@@ -31,11 +33,10 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
 	void PlayFireMontage(bool bAiming);
-
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastHit();
-
+	
 	virtual void OnRep_ReplicatedMovement() override;
+	
+
 protected:
 	
 	virtual void BeginPlay() override;
@@ -79,6 +80,11 @@ protected:
 	void SimProxiesTurn();
 	
 	void PlayHitReactMontage();
+
+	UFUNCTION()
+	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,AController* InstigatorController, AActor* DamageCauser);
+
+	void UpdateHUDHealth();
 private:
 	UPROPERTY(VisibleAnywhere, Category="Camera")
 	USpringArmComponent* CameraBoom;
@@ -139,7 +145,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_Health();
-	
+
+	ABlasterPlayerController* BlasterPlayerController;
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool isWeaponEquipped();

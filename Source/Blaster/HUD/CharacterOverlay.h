@@ -21,4 +21,6 @@ public:
 
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* HealthText;
+
+	
 };

@@ -37,6 +37,7 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bAiming = BlasterCharacter->isAiming();
 	TurningInPlace = BlasterCharacter->GetTurningInPlace();
 	bRotateRootBone = BlasterCharacter->ShouldRotateRootBone();
+	bElimmed = BlasterCharacter->IsElimmed();
 
 
 	/*

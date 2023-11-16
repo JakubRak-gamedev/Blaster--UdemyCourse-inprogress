@@ -82,6 +82,7 @@ void ABlasterCharacter::OnRep_ReplicatedMovement()
 	SimProxiesTurn();
 	TimeSinceLastMovementReplication = 0.f;
 }
+
 void ABlasterCharacter::Elim()
 {
 	if(Combat && Combat->EquippedWeapon)
@@ -91,6 +92,7 @@ void ABlasterCharacter::Elim()
 	MulticastElim();
 	GetWorldTimerManager().SetTimer(ElimTimer, this, &ABlasterCharacter::ElimTimerFinished, ElimDelay);
 }
+
 void ABlasterCharacter::MulticastElim_Implementation()
 {
 	if(BlasterPlayerController)
@@ -131,6 +133,7 @@ void ABlasterCharacter::MulticastElim_Implementation()
 		UGameplayStatics::SpawnSoundAtLocation(this, ElimBotSound, GetActorLocation());
 	}
 }
+
 void ABlasterCharacter::ElimTimerFinished()
 {
 	
@@ -319,12 +322,22 @@ void ABlasterCharacter::CalculateAO_Pitch()
 		AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
 	}
 }
+
+void ABlasterCharacter::ReloadButtonPressed()
+{
+	if(Combat)
+	{
+		Combat->Reload();
+	}
+}
+
 float ABlasterCharacter::CalculateSpeed()
 {
 	FVector Velocity = GetVelocity();
 	Velocity.Z = 0.f;
 	return Velocity.Size();
 }
+
 void ABlasterCharacter::AimOffset(float DeltaTime)
 {
 	if(Combat && Combat->EquippedWeapon == nullptr) return;
@@ -432,8 +445,11 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ABlasterCharacter::FireButtonPressed);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ABlasterCharacter::FireButtonReleased);
 		
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ABlasterCharacter::ReloadButtonPressed);
+		
 	}
 }
+
 void ABlasterCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
@@ -456,6 +472,27 @@ void ABlasterCharacter::PlayFireMontage(bool bAiming)
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
+
+void ABlasterCharacter::PlayReloadMontage()
+{
+	if(Combat==nullptr || Combat->EquippedWeapon==nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance && ReloadMontage)
+	{
+		FName SectionName;
+		switch (Combat->EquippedWeapon->GetWeaponType())
+		{
+		case EWeaponType::EWT_AssaultRifle:
+			SectionName = FName("Rifle");
+			break;
+		}
+		
+		AnimInstance->Montage_Play(ReloadMontage);
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
 
 void ABlasterCharacter::PlayElimMontage()
 {

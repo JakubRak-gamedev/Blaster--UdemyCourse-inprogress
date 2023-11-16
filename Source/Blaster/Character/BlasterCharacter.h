@@ -10,6 +10,8 @@
 #include "Components/TimelineComponent.h"
 #include "BlasterCharacter.generated.h"
 
+class ABlasterPlayerState;
+class USoundCue;
 class ABlasterPlayerController;
 class UCombatComponent;
 class UWidgetComponent;
@@ -43,6 +45,7 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastElim();
 
+	virtual void Destroyed() override;
 protected:
 	
 	virtual void BeginPlay() override;
@@ -91,6 +94,8 @@ protected:
 	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,AController* InstigatorController, AActor* DamageCauser);
 
 	void UpdateHUDHealth();
+
+	void PollInit();
 private:
 	UPROPERTY(VisibleAnywhere, Category="Camera")
 	USpringArmComponent* CameraBoom;
@@ -188,6 +193,20 @@ private:
 	// Material instance set on the Blueprint, used with the dynamic material instance
 	UPROPERTY(EditAnywhere, Category="Elim")
 	UMaterialInstance* DissolveMaterialInstance;
+
+	/*
+	 * Elim Bot
+	 */
+	UPROPERTY(EditAnywhere)
+	UParticleSystem* ElimBotEffect;
+
+	UPROPERTY(VisibleAnywhere)
+	UParticleSystemComponent* ElimBotComponent;
+
+	UPROPERTY(EditAnywhere)
+	USoundCue* ElimBotSound;
+
+	ABlasterPlayerState* BlasterPlayerState;
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool isWeaponEquipped();
@@ -201,6 +220,8 @@ public:
 	FORCEINLINE UCameraComponent* GetFollowCamera() const {return FollowCamera;};
 	FORCEINLINE bool ShouldRotateRootBone() const {return bRotateRootBone;};
 	FORCEINLINE bool IsElimmed() const {return bElimmed;};
+	FORCEINLINE float GetHealth() const {return Health;};
+	FORCEINLINE float GetMaxHealth() const {return MaxHealth;};
 };
 
 

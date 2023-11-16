@@ -93,6 +93,10 @@ void ABlasterCharacter::Elim()
 }
 void ABlasterCharacter::MulticastElim_Implementation()
 {
+	if(BlasterPlayerController)
+	{
+		BlasterPlayerController->SetHUDWeaponAmmo(0);
+	}
 	bElimmed = true;
 	PlayElimMontage();
 	// Start dissolve effect
@@ -153,6 +157,7 @@ void ABlasterCharacter::PollInit()
 		if(BlasterPlayerState)
 		{
 			BlasterPlayerState->AddToScore(0.f);
+			BlasterPlayerState->AddToDefeats(0);
 		}
 	}
 }

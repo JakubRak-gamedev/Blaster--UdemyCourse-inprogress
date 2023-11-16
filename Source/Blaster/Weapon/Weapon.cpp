@@ -3,13 +3,15 @@
 
 #include "Weapon.h"
 
-#include "Casing.h"
-#include "Blaster/Character/BlasterCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Animation/AnimationAsset.h"
-#include "Engine/SkeletalMeshSocket.h"
+#include "Blaster/Character/BlasterCharacter.h"
 #include "Net/UnrealNetwork.h"
+#include "Animation/AnimationAsset.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Casing.h"
+#include "Engine/SkeletalMeshSocket.h"
+#include "Blaster/PlayerController/BlasterPlayerController.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -62,6 +64,21 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeapon, WeaponState);
+	DOREPLIFETIME(AWeapon, Ammo);
+}
+
+void AWeapon::OnRep_Owner()
+{
+	Super::OnRep_Owner();
+	if(Owner == nullptr)
+	{
+		BlasterOwnerCharacter = nullptr;
+		BlasterOwnerController = nullptr;
+	}
+	else
+	{
+		SetHUDAmmo();
+	}
 }
 
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -102,6 +119,32 @@ void AWeapon::OnRep_WeaponState()
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		break;
 	}
+}
+
+void AWeapon::SetHUDAmmo()
+{
+	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
+	if(BlasterOwnerCharacter)
+	{
+		BlasterOwnerController = BlasterOwnerController == nullptr ? Cast<ABlasterPlayerController>(BlasterOwnerCharacter->Controller) : BlasterOwnerController;
+		if(BlasterOwnerController)
+		{
+			BlasterOwnerController->SetHUDWeaponAmmo(Ammo);
+		}
+	}
+}
+
+
+void AWeapon::SpendRound()
+{
+	--Ammo;
+	SetHUDAmmo();
+}
+
+void AWeapon::OnRep_Ammo()
+{
+	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
+	SetHUDAmmo();
 }
 
 void AWeapon::SetWeaponState(EWeaponState State)
@@ -163,13 +206,16 @@ void AWeapon::Fire(const FVector& HitTarget)
 		
 		}
 	}
+	SpendRound();
 }
 
 void AWeapon::Dropped()
 {
 	SetWeaponState(EWeaponState::EWS_Dropped);
-	FDetachmentTransformRules DetachmentRules(EDetachmentRule::KeepWorld, true);
-	WeaponMesh->DetachFromComponent(DetachmentRules);
+	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
+	WeaponMesh->DetachFromComponent(DetachRules);
 	SetOwner(nullptr);
+	BlasterOwnerCharacter = nullptr;
+	BlasterOwnerController = nullptr;
 }
 

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Blaster/BlasterTypes/CombatState.h"
 #include "Blaster/Interfaces/InteractWithCrosshairsInterface.h"
 #include "Blaster/BlasterTypes/TurningInPlace.h"
 #include "Components/TimelineComponent.h"
@@ -116,7 +117,7 @@ private:
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UCombatComponent* Combat;
 
 	UFUNCTION(Server, Reliable)
@@ -216,7 +217,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	USoundCue* ElimBotSound;
-
+	
 	UPROPERTY()
 	ABlasterPlayerState* BlasterPlayerState;
 public:
@@ -234,6 +235,7 @@ public:
 	FORCEINLINE bool IsElimmed() const {return bElimmed;};
 	FORCEINLINE float GetHealth() const {return Health;};
 	FORCEINLINE float GetMaxHealth() const {return MaxHealth;};
+	ECombatState GetCombatState() const;
 };
 
 

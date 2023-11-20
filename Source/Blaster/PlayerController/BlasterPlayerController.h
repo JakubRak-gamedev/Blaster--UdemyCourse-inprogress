@@ -23,10 +23,31 @@ public:
 	void SetHUDMatchCountdown(float CountDownTime);
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void Tick(float DeltaSeconds) override;
+
+	virtual float GetServerTime(); // Synced with server world clock
+	virtual void ReceivedPlayer() override;
 protected:
 	
     virtual void BeginPlay() override;
 	void SetHUDTime();
+
+	/*
+	 * Sync time between client and server
+	 */
+	//Request the current servet time
+	UFUNCTION(Server, Reliable)
+	void ServerRequestServerTime(float TimeOfClientRequest);
+
+	UFUNCTION(Client, Reliable)
+	void ClientReportServerTime(float TimeOfClientRequest, float TimeServerReceivedClientRequest);
+
+	float ClientServerDelta = 0.f;
+
+	UPROPERTY(EditAnywhere, Category = "Time")
+	float TimeSyncFrequency = 5.f;
+
+	float TimeSyncRunningTime = 0.f;
+	void CheckTimeSync(float DeltaTime);
 private:
 	UPROPERTY()
     ABlasterHUD* BlasterHUD;

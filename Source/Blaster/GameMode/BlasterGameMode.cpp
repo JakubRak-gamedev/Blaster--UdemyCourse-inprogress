@@ -12,12 +12,29 @@ ABlasterGameMode::ABlasterGameMode()
 {
 	bDelayedStart = true;
 }
+
 void ABlasterGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	
 	LevelStartingTime = GetWorld()->GetTimeSeconds();
 }
+
+void ABlasterGameMode::OnMatchStateSet()
+{
+	Super::OnMatchStateSet();
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; It++)
+	{
+		ABlasterPlayerController* BlasterPlayer = Cast<ABlasterPlayerController>(*It);
+
+		if (IsValid(BlasterPlayer))
+		{
+			BlasterPlayer->OnMatchStateSet(MatchState);
+		}
+	}
+}
+
 void ABlasterGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);

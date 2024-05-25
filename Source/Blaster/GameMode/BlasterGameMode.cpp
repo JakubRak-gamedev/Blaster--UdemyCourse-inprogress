@@ -16,58 +16,59 @@ ABlasterGameMode::ABlasterGameMode()
 void ABlasterGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	LevelStartingTime = GetWorld()->GetTimeSeconds();
 }
 
-void ABlasterGameMode::OnMatchStateSet()
+void ABlasterGameMode::Tick(float DeltaTime)
 {
-	Super::OnMatchStateSet();
+	Super::Tick(DeltaTime);
 
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; It++)
-	{
-		ABlasterPlayerController* BlasterPlayer = Cast<ABlasterPlayerController>(*It);
-
-		if (IsValid(BlasterPlayer))
-		{
-			BlasterPlayer->OnMatchStateSet(MatchState);
-		}
-	}
-}
-
-void ABlasterGameMode::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	if(MatchState == MatchState::WaitingToStart)
+	if (MatchState == MatchState::WaitingToStart)
 	{
 		CountdownTime = WarmupTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
-		if(CountdownTime <= 0.f)
+		if (CountdownTime <= 0.f)
 		{
 			StartMatch();
 		}
 	}
 }
 
-void ABlasterGameMode::PlayerEliminated(ABlasterCharacter* ElimmedCharacter, ABlasterPlayerController* VictimController,
-                                        ABlasterPlayerController* AttackerController)
+void ABlasterGameMode::OnMatchStateSet()
 {
+	Super::OnMatchStateSet();
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		ABlasterPlayerController* BlasterPlayer = Cast<ABlasterPlayerController>(*It);
+		if (BlasterPlayer)
+		{
+			BlasterPlayer->OnMatchStateSet(MatchState);
+		}
+	}
+}
+
+void ABlasterGameMode::PlayerEliminated(class ABlasterCharacter* ElimmedCharacter, class ABlasterPlayerController* VictimController, ABlasterPlayerController* AttackerController)
+{
+	if (AttackerController == nullptr || AttackerController->PlayerState == nullptr) return;
+	if (VictimController == nullptr || VictimController->PlayerState == nullptr) return;
 	ABlasterPlayerState* AttackerPlayerState = AttackerController ? Cast<ABlasterPlayerState>(AttackerController->PlayerState) : nullptr;
 	ABlasterPlayerState* VictimPlayerState = VictimController ? Cast<ABlasterPlayerState>(VictimController->PlayerState) : nullptr;
-	if(AttackerPlayerState && AttackerPlayerState != VictimPlayerState)
+
+	if (AttackerPlayerState && AttackerPlayerState != VictimPlayerState)
 	{
 		AttackerPlayerState->AddToScore(1.f);
 	}
-	if(VictimPlayerState)
+	if (VictimPlayerState)
 	{
 		VictimPlayerState->AddToDefeats(1);
 	}
-	if(ElimmedCharacter)
+
+	if (ElimmedCharacter)
 	{
 		ElimmedCharacter->Elim();
 	}
 }
-
 void ABlasterGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController)
 {
 	if (ElimmedCharacter)

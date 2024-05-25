@@ -36,6 +36,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
+
 	void PlayFireMontage(bool bAiming);
 	void PlayElimMontage();
 	void PlayReloadMontage();
@@ -48,6 +49,8 @@ public:
 	void MulticastElim();
 
 	virtual void Destroyed() override;
+
+	void TrySetInputs();
 protected:
 	
 	virtual void BeginPlay() override;

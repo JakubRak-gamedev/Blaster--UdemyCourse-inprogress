@@ -173,6 +173,17 @@ void ABlasterCharacter::Destroyed()
 	}
 }
 
+void ABlasterCharacter::TrySetInputs()
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(BlasterContext, 0);
+		}
+	}
+}
+
 // Called when the game starts or when spawned
 void ABlasterCharacter::BeginPlay()
 {
@@ -181,6 +192,7 @@ void ABlasterCharacter::BeginPlay()
 	/*
 	 * Enhanced Input
 	 */
+
 	if(APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if(UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))

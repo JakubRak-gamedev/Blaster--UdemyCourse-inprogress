@@ -47,7 +47,7 @@ public:
 	TSubclassOf<UUserWidget> AnnouncementClass;
 
 	UPROPERTY()
-	UAnnouncement* Annoucement;
+	UAnnouncement* Announcement;
 protected:
 	virtual void BeginPlay() override;
 

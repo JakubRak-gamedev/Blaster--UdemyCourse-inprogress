@@ -29,7 +29,8 @@ public:
 	
 	void EquipWeapon(AWeapon* WeaponToEquip);
 	void Reload();
-	
+	void FireButtonPressed(bool bPressed);
+
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
 protected:
@@ -43,7 +44,6 @@ protected:
 	void OnRep_EquippedWeapon();
 	void Fire();
 
-	void FireButtonPressed(bool bPressed);
 
 	UFUNCTION(Server, Reliable)
 	void ServerFire(const FVector_NetQuantize& TraceHitTarget);

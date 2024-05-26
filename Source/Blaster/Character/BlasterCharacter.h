@@ -51,6 +51,9 @@ public:
 	virtual void Destroyed() override;
 
 	void TrySetInputs();
+
+	UPROPERTY(Replicated)
+	bool bDisableGameplay = false;
 protected:
 	
 	virtual void BeginPlay() override;
@@ -100,10 +103,9 @@ protected:
 
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,AController* InstigatorController, AActor* DamageCauser);
-
 	void UpdateHUDHealth();
-
 	void PollInit();
+	void RotateInPlace(float DeltaTime);
 private:
 	UPROPERTY(VisibleAnywhere, Category="Camera")
 	USpringArmComponent* CameraBoom;
@@ -239,6 +241,8 @@ public:
 	FORCEINLINE float GetHealth() const {return Health;};
 	FORCEINLINE float GetMaxHealth() const {return MaxHealth;};
 	ECombatState GetCombatState() const;
+	FORCEINLINE UCombatComponent* GetCombat() const { return Combat; }
+	FORCEINLINE bool GetbDisableGameplay() const { return bDisableGameplay; }
 };
 
 

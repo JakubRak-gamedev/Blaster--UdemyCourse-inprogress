@@ -244,6 +244,11 @@ void ABlasterPlayerController::SetHUDTime()
 		if (MatchState == MatchState::InProgress)
 		{
 			SetHUDMatchCountdown(TimeLeft);
+
+			if (TimeLeft <= 20.f)
+			{
+				CountdownRedBlink();
+			}
 		}
 	}
 
@@ -387,5 +392,32 @@ void ABlasterPlayerController::HandleCooldown()
 	{
 		BlasterCharacter->bDisableGameplay = true;
 		BlasterCharacter->GetCombat()->FireButtonPressed(false);
+	}
+}
+
+void ABlasterPlayerController::CountdownRedBlink()
+{
+	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	if (BlasterHUD)
+	{
+		if (BlasterHUD->CharacterOverlay)
+		{
+			UTextBlock* Timer = BlasterHUD->CharacterOverlay->MatchCountdownText;
+			if (Timer)
+			{
+				DefColor = FSlateColor(FLinearColor(1.f, 1.f, 1.f, 1.f));
+				FSlateColor NewColor = FSlateColor(FLinearColor(1.f, 0.f, 0.f, 1.f));
+
+				if (Timer->GetColorAndOpacity() == DefColor)
+				{
+					Timer->SetColorAndOpacity(NewColor);
+				}
+				else
+				{
+					Timer->SetColorAndOpacity(DefColor);
+				}
+				
+			}
+		}	
 	}
 }

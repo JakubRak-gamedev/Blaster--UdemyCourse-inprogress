@@ -33,6 +33,7 @@ public:
 	void HandleMatchHasStarted();
 	void HandleCooldown();
 
+	void CountdownRedBlink();
 protected:
 	virtual void BeginPlay() override;
 	void SetHUDTime();
@@ -91,5 +92,8 @@ private:
 	float HUDMaxHealth;
 	float HUDScore;
 	int32 HUDDefeats;
+
+
+	FSlateColor DefColor;
 
 };

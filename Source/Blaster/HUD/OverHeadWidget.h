@@ -23,6 +23,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ShowPlayerNetRole(APawn* InPawn);
+
+	UFUNCTION(BlueprintCallable)
+	void ShowPlayerNickname(FString Name);
 protected:
 	virtual void NativeDestruct() override;
 };

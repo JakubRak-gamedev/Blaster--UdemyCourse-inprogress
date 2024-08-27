@@ -341,20 +341,22 @@ void ABlasterPlayerController::HandleMatchHasStarted()
 
 void ABlasterPlayerController::HandleCooldown()
 {
-
 	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	if (BlasterHUD)
 	{
 		BlasterHUD->CharacterOverlay->RemoveFromParent();
-
-		UTextBlock* Block = BlasterHUD->Announcement->AnnouncementText;
+		
+		if(BlasterHUD->Announcement == nullptr)
+			return;
+		
+		UTextBlock* TextBlock = BlasterHUD->Announcement->AnnouncementText;
 		UTextBlock* Info = BlasterHUD->Announcement->InfoText;
-
-		if (BlasterHUD->Announcement && Block && Info)
+		
+		if (BlasterHUD->Announcement && TextBlock && Info)
 		{
 			BlasterHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
 			FString AnnouncementText("New Match Starts In:");
-			Block->SetText(FText::FromString(AnnouncementText));
+			TextBlock->SetText(FText::FromString(AnnouncementText));
 
 			ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 			ABlasterPlayerState* BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();

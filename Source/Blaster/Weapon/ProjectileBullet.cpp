@@ -19,6 +19,5 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		}
 	}
 	
-	
 	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 }

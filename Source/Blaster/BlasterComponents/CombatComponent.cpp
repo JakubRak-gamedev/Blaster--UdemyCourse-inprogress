@@ -23,8 +23,6 @@ UCombatComponent::UCombatComponent()
 	AimWalkSpeed = 450.f;
 }
 
-
-
 void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();

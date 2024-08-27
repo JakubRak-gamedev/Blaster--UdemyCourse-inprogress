@@ -214,7 +214,6 @@ void ABlasterCharacter::BeginPlay()
 			Subsystem->AddMappingContext(BlasterContext, 0);
 		}
 	}
-
 	
 	UpdateHUDHealth();
 	if(HasAuthority())
@@ -226,9 +225,7 @@ void ABlasterCharacter::BeginPlay()
 void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	
-
 	RotateInPlace(DeltaTime);
 	HideCameraIfCharacterClose();
 	PollInit();
@@ -256,8 +253,6 @@ void ABlasterCharacter::RotateInPlace(float DeltaTime)
 		}
 		CalculateAO_Pitch();
 	}
-
-	
 }
 
 void ABlasterCharacter::Move(const FInputActionValue& Value)

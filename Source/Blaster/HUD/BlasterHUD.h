@@ -44,14 +44,13 @@ public:
 	UCharacterOverlay* CharacterOverlay;
 	
 	UPROPERTY(EditAnywhere, Category = "Announcements")
-	TSubclassOf<UUserWidget> AnnouncementClass;
+	TSubclassOf<UAnnouncement> AnnouncementClass;
 
 	UPROPERTY()
 	UAnnouncement* Announcement;
 protected:
 	virtual void BeginPlay() override;
 
-	
 private:
 	FHUDPackage HUDPackage;
 	
